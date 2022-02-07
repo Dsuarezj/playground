@@ -1,17 +1,38 @@
-import {Client, create} from "@open-wa/wa-automate";
+import { create, Whatsapp } from 'venom-bot';
 
-function start(client: Client) {
-  console.log("aaaaaa client started");
-  client.onMessage(async (message) => {
-    if (message.body === "Hi") {
-      await client.sendText(message.from, "👋 Hello!");
+function start(client: Whatsapp) {
+  client.onMessage((message) => {
+    if (message.body === 'Hi') {
+      client
+          .sendText(message.from, 'Welcome Venom 🕷')
+          .then((result) => {
+            console.log('Result: ', result); //return object success
+          })
+          .catch((erro) => {
+            console.error('Error when sending: ', erro); //return object error
+          });
     }
   });
 }
 
 export function loader() {
-  create().then((client) => start(client));
-
+    create(
+        'sessionName',
+        undefined,
+        (statusSession, session) => {
+            console.log('Status Session: ', statusSession);
+            console.log('Session name: ', session);
+        },
+        {
+            multidevice: false // for version not multidevice use false.(default: true)
+        }
+    )
+        .then((client) => {
+            start(client);
+        })
+        .catch((erro) => {
+            console.log(erro);
+        });
   return { message: "this is awesome 😎" };
 }
 
